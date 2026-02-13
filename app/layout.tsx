@@ -20,6 +20,12 @@ const _notoSansSC = Noto_Sans_SC({
 export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
+  icons: {
+    icon: [
+      { url: '/images/favicon.ico', type: 'image/x-icon' },
+    ],
+    shortcut: ['/images/favicon.ico'],
+  },
 }
 
 export const viewport: Viewport = {
