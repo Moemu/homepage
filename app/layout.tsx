@@ -1,52 +1,41 @@
-import type { Metadata, Viewport } from 'next'
-import { Quicksand, Noto_Sans_SC } from 'next/font/google'
-import { siteConfig } from '@/config/site'
-import { ThemeProvider } from '@/components/theme-provider'
+import type { Metadata, Viewport } from "next"
+import localFont from "next/font/local"
+import { siteConfig, themeStorageKey } from "@/config/site"
+import "./globals.css"
 
-import './globals.css'
-
-const _quicksand = Quicksand({
-  subsets: ['latin'],
-  variable: '--font-quicksand',
-  weight: ['300', '400', '500', '600', '700'],
-})
-
-const _notoSansSC = Noto_Sans_SC({
-  subsets: ['latin'],
-  variable: '--font-noto-sc',
-  weight: ['300', '400', '500', '700'],
+const quicksand = localFont({
+  src: "./fonts/quicksand-latin.woff2",
+  weight: "400 700",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
-  title: siteConfig.title,
-  description: siteConfig.description,
-  icons: {
-    icon: [
-      { url: '/images/favicon.ico', type: 'image/x-icon' },
-    ],
-    shortcut: ['/images/favicon.ico'],
-  },
+  title: siteConfig.name,
+  description: `${siteConfig.name} / ${siteConfig.role}`,
+  icons: { icon: "/images/favicon.ico", shortcut: "/images/favicon.ico" },
 }
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#eaf0f7' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b1220' },
-  ],
-}
+export const viewport: Viewport = { colorScheme: "light dark", viewportFit: "cover" }
+
+const restoreTheme = `
+  try {
+    const theme = localStorage.getItem(${JSON.stringify(themeStorageKey)});
+    if (theme === "light" || theme === "dark") {
+      document.documentElement.dataset.theme = theme;
+    }
+  } catch {}
+`
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${_quicksand.variable} ${_notoSansSC.variable} font-sans antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
-      </body>
+      <head>
+        <meta name="darkreader-lock" />
+        <script dangerouslySetInnerHTML={{ __html: restoreTheme }} />
+      </head>
+      <body className={quicksand.className}>{children}</body>
     </html>
   )
 }
